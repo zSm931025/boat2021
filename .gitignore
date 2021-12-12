@@ -7,7 +7,7 @@
 #.settings/
 
 mcu/MDK-ARM/DebugConfig/
-mcu/MDK-ARM/boat2021/
+mcu/MDK-ARM/boat2021_v1/
 mcu/MDK-ARM/RTE/
 mcu/MDK-ARM/startup_stm32f405xx.lst
 mcu/MDK-ARM/JLinkLog.txt
