@@ -3,11 +3,15 @@
 #include "../../MDK-ARM/pwm.h"
 #include "../../MDK-ARM/gps.h"
 #include "../../MDK-ARM/yis100.h"
+#include "../../MDK-ARM/pid.h"
+#include "../../MDK-ARM/cjson_com_port.h"
 #include "control_boat.h"
 #include <stdio.h>
 
 void StartTask03(void *argument)
 {
+	JsonReceiveInit();
+	init_pid();
 	ctrl_init();
 	init_capture_pwm();
 	init_gps(&gps_handle);
@@ -15,6 +19,7 @@ void StartTask03(void *argument)
 	uint8_t num1=0;
 	for(;;)
 	{
+		JsonParseRoutine();
 		get_pwm(&pwm_info);
 		contorl_boat(&control_info);
 		num1++;

@@ -315,6 +315,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 #include "../../MDK-ARM/pc.h"
 #include "../../MDK-ARM/gps.h"
 #include "../../MDK-ARM/yis100.h"
+#include "../../MDK-ARM/cjson_com_port.h"
 #define PRINT_UART huart1
 
 #ifdef __GNUC__
@@ -345,6 +346,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	if (huart->Instance == YIS_USART.Instance)
 	{
 		usart_recv_callback(&yis_Handle);
+		return;
+	}
+	if (huart->Instance == USART1)
+	{
+		JsonUartRecCallback();
 		return;
 	}
 

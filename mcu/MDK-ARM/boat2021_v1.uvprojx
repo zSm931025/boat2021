@@ -502,6 +502,36 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f4xx_hal_timebase_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\pid.h</FilePath>
+            </File>
+            <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\cJSON.c</FilePath>
+            </File>
+            <File>
+              <FileName>cjson_com_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\cjson_com_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>cJSON.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\cJSON.h</FilePath>
+            </File>
+            <File>
+              <FileName>cjson_com_port.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\cjson_com_port.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -2,6 +2,8 @@
 #include "pwm.h"
 #include "stdio.h"
 #include "pc.h"
+#include "../../MDK-ARM/pid.h"
+
 
 CONTROL_INFO control_info;
 
@@ -24,6 +26,8 @@ void contorl_boat(CONTROL_INFO* comd)
 	//
 	//
 	//此处可加pid,分遥控和
+	//process_pid();
+	//
 	//
 	//
 	send_control_info(comd);

@@ -385,11 +385,11 @@ uint8_t prepare_gro(PCHANDLE*handle)
 	p+=sizeof(float);
 	//y
 
-	memcpy(p,&yis_Handle.yis_data.gyr_x,sizeof(float));
+	memcpy(p,&yis_Handle.yis_data.gyr_y,sizeof(float));
 	p+=sizeof(float);
 	//z
 	
-	memcpy(p,&yis_Handle.yis_data.gyr_x,sizeof(float));
+	memcpy(p,&yis_Handle.yis_data.gyr_z,sizeof(float));
 	p+=sizeof(float);
 	return 19;
 }
