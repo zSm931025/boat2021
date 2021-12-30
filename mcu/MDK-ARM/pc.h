@@ -110,7 +110,7 @@ typedef struct
 
 
 
-extern  PCHANDLE pcHandle;
+extern  volatile PCHANDLE pcHandle;
 void pc_recv_callback(PCHANDLE* handle);
 void pc_send_callback(PCHANDLE* handle);
 void pc_time_callback(PCHANDLE* handle);

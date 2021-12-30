@@ -1035,7 +1035,7 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
     }
 
     /* Process Locked */
-    __HAL_LOCK(huart);
+    //__HAL_LOCK(huart);
 
     huart->ErrorCode = HAL_UART_ERROR_NONE;
     huart->gState = HAL_UART_STATE_BUSY_TX;
@@ -1047,7 +1047,7 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
     huart->TxXferCount = Size;
 
     /* Process Unlocked */
-    __HAL_UNLOCK(huart);
+    //__HAL_UNLOCK(huart);
 
     while (huart->TxXferCount > 0U)
     {
@@ -1121,7 +1121,7 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
     }
 
     /* Process Locked */
-    __HAL_LOCK(huart);
+    //__HAL_LOCK(huart);
 
     huart->ErrorCode = HAL_UART_ERROR_NONE;
     huart->RxState = HAL_UART_STATE_BUSY_RX;
@@ -1133,7 +1133,7 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
     huart->RxXferCount = Size;
 
     /* Process Unlocked */
-    __HAL_UNLOCK(huart);
+    //__HAL_UNLOCK(huart);
 
     /* Check the remain data to be received */
     while (huart->RxXferCount > 0U)

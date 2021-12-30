@@ -16,7 +16,7 @@ uint8_t prepare_tim(PCHANDLE*handle);
 uint8_t prepare_sys(PCHANDLE*handle);
 uint16_t checkSumPcmsg(uint8_t* data,uint8_t len);
 
-PCHANDLE pcHandle;
+volatile PCHANDLE pcHandle;
 
 
 void init_pc_interface(PCHANDLE* handle)
@@ -159,7 +159,11 @@ void parse_pc(PCHANDLE*handle)
 		{
 			handle->wrong_frame_times++;
 		}
-	}		
+	}
+	else
+	{
+		//printf("@");
+	}
 }
 
 void send_pc(PCHANDLE* handle)

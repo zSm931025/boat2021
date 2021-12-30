@@ -8,7 +8,7 @@
 */
 
 #define JSON_REC_BUF_LEN   (200)
-#define JSON_UART          (huart1)
+#define JSON_UART        huart1
 
 typedef struct _JsonUartRec {
     uint8_t buf[JSON_REC_BUF_LEN];

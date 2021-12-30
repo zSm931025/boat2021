@@ -14,6 +14,7 @@ void init_pid()
 	p_pid->p_integral_max = 10;
 	p_pid->p_integral_threshold = 5;
 	p_pid->p_max_output = 10;
+	p_pid->p_last_error = 0;
 	
 	p_pid->v_p = 1;
 	p_pid->v_i = 1;
@@ -22,6 +23,7 @@ void init_pid()
 	p_pid->v_integral_max = 10;
 	p_pid->v_integral_threshold = 5;
 	p_pid->v_max_output = 10;
+	p_pid->v_last_error = 0;
 }
 
 float process_pid(float aim_angle, float now_angle, float now_angleSpeed)
@@ -61,5 +63,5 @@ float process_pid(float aim_angle, float now_angle, float now_angleSpeed)
 		output2 = p_pid->v_max_output;
 	if (output2<-p_pid->v_max_output)
 		output2 = -p_pid->v_max_output;
-	return output2;
+	return -output2;
 }

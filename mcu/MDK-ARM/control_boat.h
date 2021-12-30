@@ -36,6 +36,8 @@ typedef struct
 }CONTROL_INFO;
 
 extern CONTROL_INFO control_info;
+extern volatile float set_angle;
+extern volatile uint8_t pid_mode;
 void ctrl_init();
 void contorl_boat(CONTROL_INFO* comd);
 void print_boat_info(CONTROL_INFO* comd);

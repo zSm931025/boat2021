@@ -3,13 +3,15 @@
 #include "stdio.h"
 #include "pc.h"
 #include "../../MDK-ARM/pid.h"
+#include "yis100.h"
 
 
 CONTROL_INFO control_info;
 
 void get_control_info(CONTROL_INFO* comd);
 void send_control_info();
-
+volatile float set_angle = 0;
+volatile uint8_t pid_mode=0;
 
 void ctrl_init()
 {
@@ -26,6 +28,15 @@ void contorl_boat(CONTROL_INFO* comd)
 	//
 	//
 	//此处可加pid,分遥控和
+	if(pwm_info.pwm_buf[7]>1500)
+	{
+		comd->rudder = process_pid(set_angle,yis_Handle.yis_data.eul_z,yis_Handle.yis_data.gyr_z);
+		pid_mode = 1;
+	}
+	else
+	{
+		pid_mode = 0;
+	}
 	//process_pid();
 	//
 	//
