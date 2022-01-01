@@ -5,7 +5,8 @@
 #[Bb]in/
 # Other files and folders
 #.settings/
-
+.idea/
+__pycache__/
 mcu/MDK-ARM/DebugConfig/
 mcu/MDK-ARM/boat2021_v1/
 mcu/MDK-ARM/RTE/

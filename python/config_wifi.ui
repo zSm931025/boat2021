@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WIFI</class>
+ <widget class="QWidget" name="WIFI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>377</width>
+    <height>432</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>config_wifi</string>
+  </property>
+  <widget class="QPushButton" name="cmd_ping">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>150</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ping</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="ip_info">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>40</y>
+     <width>171</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="inputMask">
+    <string>000.000.000.000;_</string>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>30</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>ip:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>80</y>
+     <width>51</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>port:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cmd_ipconfig">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>150</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ipconfig</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cmd_save">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>150</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="port_info">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>90</y>
+     <width>171</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="inputMask">
+    <string>9999;_</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QTextBrowser" name="show_res">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>351</width>
+     <height>221</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>cmd_ipconfig</sender>
+   <signal>clicked()</signal>
+   <receiver>WIFI</receiver>
+   <slot>ip_config()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>23</x>
+     <y>107</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cmd_ping</sender>
+   <signal>clicked()</signal>
+   <receiver>WIFI</receiver>
+   <slot>ping()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>217</x>
+     <y>163</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>345</x>
+     <y>77</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cmd_save</sender>
+   <signal>clicked()</signal>
+   <receiver>WIFI</receiver>
+   <slot>config_ok()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>164</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>360</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>ip_config()</slot>
+  <slot>ping()</slot>
+  <slot>config_ok()</slot>
+ </slots>
+</ui>

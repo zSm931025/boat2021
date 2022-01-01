@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SERIAL</class>
+ <widget class="QWidget" name="SERIAL">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>516</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>config_serial</string>
+  </property>
+  <widget class="QPushButton" name="save_serial">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>450</y>
+     <width>100</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>71</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>40</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>串口选择:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>波特率:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>数据位:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>校验位:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>停止位:</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>40</y>
+     <width>101</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0">
+    <property name="spacing">
+     <number>40</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QComboBox" name="serial_select">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>com1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>com2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>com3</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="serial_baudrate">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>115200</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9600</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>19200</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>57600</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="serial_databits">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>8</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>10</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="serial_parity">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>N</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="serial_stopbits">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="serial_detect">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>450</y>
+     <width>100</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="text">
+    <string>串口检测</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>serial_detect</sender>
+   <signal>clicked()</signal>
+   <receiver>SERIAL</receiver>
+   <slot>detect_serial_fun()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>458</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>13</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_serial</sender>
+   <signal>clicked()</signal>
+   <receiver>SERIAL</receiver>
+   <slot>config_ok()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>448</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>detect_serial_fun()</slot>
+  <slot>config_ok()</slot>
+ </slots>
+</ui>
