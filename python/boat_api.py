@@ -11,8 +11,8 @@ from gps_resource import *
 from pid_angle2 import *
 
 
-plot_0 = True
-base = [0,0]  #经度， 纬度
+# plot_0 = True
+# base = [0,0]  #经度， 纬度
 
 # plt.ion()
 # fig,axes = plt.subplots()
@@ -346,8 +346,8 @@ class BOAT_():
 
         self.com_status = 0
         self.wifi = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.wifi_host  = "192.168.16.254"
-        self.wifi_port = 9999
+        self.wifi_host  = "localhost"
+        self.wifi_port = 8083
 
         self.ser=serial.Serial()
         self.ser_port     = "com5"
@@ -515,8 +515,6 @@ class BOAT_():
         self.stopsendEvent.set()
         print("close send thread!")
 
-
-
     def config_wifi(self,config_dict):
         self.wifi_host = config_dict["host"]
         self.wifi_port = config_dict["port"]
@@ -535,11 +533,11 @@ class BOAT_():
             print("process has die")
             return False
         self.com_status = 1
-        read_w = threading.Thread(target=self.read_mcu_wifi, args=(self.wifi,))
-        send_w = threading.Thread(target=self.send_mcu_wifi, args=(self.wifi,))
+        read_w = threading.Thread(target=self.read_mcu_wifi, args=(wifi,))
+        #send_w = threading.Thread(target=self.send_mcu_wifi, args=(wifi,))
         protect_w = threading.Thread(target=self.protect_wifi, args=(wifi,))
         read_w.start()
-        send_w.start()
+        #send_w.start()
         protect_w.start()
         return True
 
@@ -565,13 +563,14 @@ class BOAT_():
     # @staticmethod
     def protect_wifi(self,wifiHandle):
         while not self.stopEvent.is_set():
-            self.loseConnectEvent.wait()
-            wifiHandle.close()
-            try:
-                wifiHandle.open()
-                self.loseConnectEvent.clear()
-            except:
-                print("wrong--------------------------------!")
+            pass
+            # self.loseConnectEvent.wait()
+            # wifiHandle.close()
+            # try:
+            #     wifiHandle.open()
+            #     self.loseConnectEvent.clear()
+            # except:
+            #     print("wrong--------------------------------!")
         print("close protect thread!")
 
     # @staticmethod
@@ -583,26 +582,32 @@ class BOAT_():
         last_count = 0
         all_lose_nums = 0
         print("开始 read_thread")
+        socket.timeout
         while not self.stopEvent.is_set():
             if not self.loseConnectEvent.is_set():
-                time.sleep(0.01)
                 raw_frame = bytes([])
                 try:
                     raw_frame = READ.recv(1024)
-                except:
+                except socket.timeout:
+                    continue
+                except Exception as e:
+                    print("read_except:{}".format(e))
                     self.loseConnectEvent.set()
                     continue
-                    #print("超时", len(raw_frame))
                 now_frame = raw_frame
                 while (len(raw_frame) == 1024):
                     try:
                         raw_frame = READ.recv(1024)
-                    except:
+                    except socket.timeout:
+                        break
+                    except Exception as e:
+                        print("read_except:{}".format(e))
                         self.loseConnectEvent.set()
                         break
                         #print("超时", len(raw_frame))
                     now_frame += raw_frame
                 if self.loseConnectEvent.is_set():
+                    print("lose connect event set ")
                     continue
                 if last_frame != bytes([]):
                     frame = last_frame + now_frame
@@ -637,6 +642,7 @@ class BOAT_():
                     else:
                         data = None
             else:
+                print("fasdfasfasfdasfasf")
                 time.sleep(0.1)
         self.stopreadEvent.set()
         print("close read thread!")
@@ -658,23 +664,22 @@ class BOAT_():
                 # SEND.send(bytes(send_bytes))
                 try:
                     SEND.sendall(bytes(send_bytes))
-                except:
+                except Exception as e:
+                    print("send_except:{}".format(e))
                     self.loseConnectEvent.set()
             else:
+
                 time.sleep(0.1)
         self.stopsendEvent.set()
         print("close send thread!")
-
-
-
-
 
 if __name__=="__main__":
     demo = BOAT_()
     print(demo.detect_serial())
     print("\n\n\n\n##########################################################\n\n\n\n")
     # time.sleep(3)
-    demo.open_serial()
+    while(not demo.open_wifi()):
+        print("Open serial fail")
     #demo.open_wifi()
     method_angle = PID_ANGLE2()
     aim_angle =30
@@ -692,11 +697,10 @@ if __name__=="__main__":
             #print("output:%5.2f"%(res))
 
             #print("now:",now_angel,"   aim:",aim_angle,"  rotation:",res)
+        else:
+            #print("None data")
+            pass
         # if recvmsg["gps"]["lon_degree"]!= None:
-        #     # longitude_ = float(recvmsg["gps"]["lon_degree"]) + float(recvmsg["gps"]["lon_cent"]) / 60.0 + float(
-        #     #     recvmsg["gps"]["lon_second"]) / 3600.0
-        #     # latitude_ = float(recvmsg["gps"]["lat_degree"]) + float(recvmsg["gps"]["lat_cent"]) / 60.0 + float(
-        #     #     recvmsg["gps"]["lat_second"]) / 3600.0
         #     longitude_ = recvmsg["gps"]["lon_degree"] + recvmsg["gps"]["lon_cent"]/ 60.0 + recvmsg["gps"]["lon_second"]/ 3600.0
         #     latitude_ = recvmsg["gps"]["lat_degree"] + recvmsg["gps"]["lat_cent"] / 60.0 + recvmsg["gps"]["lat_second"] / 3600.0
         #         plot_0 = False
@@ -718,8 +722,6 @@ if __name__=="__main__":
             # line  = axes.plot(gro_z,c="g")
         # plt.pause(0.001)
         # plt.show()
-
-
     demo.read.join()
     demo.send.join()
     print("hhh---------------------------------------------------------")

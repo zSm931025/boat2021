@@ -7,7 +7,8 @@ from config_wifi import Ui_WIFI
 import cv2
 from boat_api import *
 import os
-from get_video import *
+import sys
+#from get_video import *
 
 # definition
 # car_V:velocity(0-100)
@@ -437,21 +438,24 @@ class key_ctl(QMainWindow,Ui_MainWindow):
 
     def start_over(self):
         if(self.demo.com_status==0):
-            print("open start")
             if(self.set_communication_mode.currentText()=="serial"):
+                print("open serial")
                 if(self.demo.open_serial()):
                     self.statusbar.showMessage("open serial:successful")
                     self.open_close.setText("close")
                     self.set_communication_mode.setDisabled(1)
                 else:
                     self.statusbar.showMessage("open serial:failed")
+                    print("failed")
             else:
+                print("open wifi")
                 if(self.demo.open_wifi()):
                     self.statusbar.showMessage("open wifi:successful")
                     self.open_close.setText("close")
                     self.set_communication_mode.setDisabled(1)
                 else:
                     self.statusbar.showMessage("open wifi:failed")
+                    print("failed")
 
         else:
             print("close start")
