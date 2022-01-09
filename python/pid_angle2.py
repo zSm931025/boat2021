@@ -41,7 +41,7 @@ class PID_ANGLE2():
         else:
             self.p_error = 360+error_temp
 
-        print("nowAngle-aimAngle%5.2f" % (self.p_error), end="   ")
+        #print("nowAngle-aimAngle%5.2f" % (self.p_error), end="   ")
 
         if(abs(self.p_error)<self.p_integral_threshold):
             self.p_integral+=self.p_error
@@ -51,7 +51,7 @@ class PID_ANGLE2():
                 self.p_integral = -self.p_max_integral
         else:
             self.p_integral = 0
-        print("p_integral：%f" % (self.p_integral), end="   ")
+        #print("p_integral：%f" % (self.p_integral), end="   ")
 
         output = self.p_p*self.p_error+self.p_i*self.p_integral+self.p_d*(self.p_error-self.p_last_error)
         self.p_last_error = self.p_error
@@ -78,8 +78,8 @@ class PID_ANGLE2():
             output1 = self.v_max_output
         if output1 < -self.v_max_output:
             output1 = -self.v_max_output
-        print("aimSpeed:%5.2f"%(output),end="   ")
-        print("aimSpeed-nowSpeed:%5.2f"%(output-now_speed),end="   ")
+        #print("aimSpeed:%5.2f"%(output),end="   ")
+        #print("aimSpeed-nowSpeed:%5.2f"%(output-now_speed),end="   ")
         return -output1
 
 

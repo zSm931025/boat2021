@@ -334,71 +334,28 @@ class BOAT_():
     def __init__(self):
         super(BOAT_,self).__init__()
 
+        self.stopEvent = threading.Event()
         self.stopreadEvent = threading.Event()
-        self.stopreadEvent.clear()
-
         self.stopsendEvent = threading.Event()
+        self.stopEvent.clear()
+        self.stopreadEvent.clear()
         self.stopsendEvent.clear()
+        self.loseConnectEvent = threading.Event()
+        self.loseConnectEvent.clear()
+
 
         self.com_status = 0
-
-
+        self.wifi = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.wifi_host  = "192.168.16.254"
         self.wifi_port = 9999
 
         self.ser=serial.Serial()
-
         self.ser_port     = "com5"
         self.ser_baudrate = "115200"
         self.ser_bytesize = 8
         self.ser_stopbits = 1
         #self.ser_partity = None
-        self.ser_timeout = 0.0001
-
-    def open_wifi(self):
-        if self.com_status==1:
-            return False
-        try:
-            self.wifi = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            host = self.wifi_host
-            port = int(self.wifi_port)
-            self.wifi.settimeout(1)
-            self.wifi.connect((host,port))
-            #self.wifi.settimeout(None)
-
-
-        except Exception:
-            print("process has die")
-            return False
-        self.com_status = 1
-        self.read = threading.Thread(target=self.read_mcu, args=(self.wifi, 1,))
-        self.read.start()
-        self.send = threading.Thread(target=self.send_mcu, args=(self.wifi, 1,))
-        self.send.start()
-        return True
-
-    def close_wifi(self):
-        if self.com_status==0:
-            return False
-        self.stopreadEvent.set()
-        self.stopsendEvent.set()
-        while(self.stopreadEvent.is_set() or self.stopsendEvent.is_set()):
-            time.sleep(0.01)
-            #print("read:",self.stopreadEvent.is_set(),"send:",self.stopsendEvent.is_set())
-        self.wifi.close()
-        print("close wifi end")
-        self.com_status = 0
-        return True
-
-    # def ping_wifi(self):
-    #     process = subprocess.Popen(self.wifi_host, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    #     command_output = process.stdout.read().decode('GB2312')
-    #     print(command_output)
-    #     return command_output
-
-    def config_wifi(self,config_dict):
-        self.wifi_host = config_dict["host"]
-        self.wifi_port = config_dict["port"]
+        self.ser_timeout = 0.00001
 
     def config_serial(self,config_dict):
         self.ser_port = config_dict["port"]
@@ -421,7 +378,7 @@ class BOAT_():
     def open_serial(self):
         if self.com_status == 1:
             return False
-        ser = self.ser#serial.Serial()
+        ser          = self.ser #serial.Serial()
         ser.port     = self.ser_port
         ser.baudrate = self.ser_baudrate
         ser.bytesize = self.ser_bytesize
@@ -431,13 +388,14 @@ class BOAT_():
             ser.open()
         except:
             return False
-
         if ser.isOpen():
             self.com_status = 1
-            self.read = threading.Thread(target=self.read_mcu,args = (ser,0,))
-            self.read.start()
-            self.send = threading.Thread(target=self.send_mcu,args = (ser,0,))
-            self.send.start()
+            read_s = threading.Thread(target=self.read_mcu_serial,args = (ser,))
+            send_s = threading.Thread(target=self.send_mcu_serial,args = (ser,))
+            protect_s = threading.Thread(target=self.protect_serial,args= (ser,))
+            read_s.start()
+            send_s.start()
+            protect_s.start()
             return True
         else:
              return False
@@ -446,120 +404,269 @@ class BOAT_():
         if self.com_status == 0:
             print("已经是关闭的")
             return False
-        self.stopreadEvent.set()
-        self.stopsendEvent.set()
-        while(self.stopsendEvent.is_set() or self.stopreadEvent.is_set()):
-            print("等待")
-            time.sleep(0.05)
+        print("start to close serial!")
+        self.stopreadEvent.clear()
+        self.stopsendEvent.clear()
+        self.stopEvent.set()
+        self.stopreadEvent.wait()
+        self.stopsendEvent.wait()
         self.ser.close()
         self.com_status = 0
+        print("close serial complete!")
         return True
 
+    #@staticmethod
+    def protect_serial(self,serHandle):
+        while not self.stopEvent.is_set():
+            self.loseConnectEvent.wait()
+            serHandle.close()
+            try:
+                serHandle.open()
+                self.loseConnectEvent.clear()
+            except:
+                print("wrong--------------------------------!")
+        print("close protect thread!")
+
     # @staticmethod
-    def read_mcu(self,READ,is_wifi):
+    def read_mcu_serial(self,READ):
         read_msg = R_MSG()
-        head = bytes([241,242])
+        head = bytes([241, 242])
         last_frame = bytes([])
         first_recv_flag = 1
         last_count = 0
-        all_lose_nums  =0
+        all_lose_nums = 0
         print("开始 read_thread")
-        while (1):
-            time.sleep(0.01)
-            raw_frame = bytes([])
-            if is_wifi:
-                try:
-                    raw_frame = READ.recv(1024)
-                except:
-                    print("超时",len(raw_frame))
-            else:
+        while not self.stopEvent.is_set():
+            if not self.loseConnectEvent.is_set():
+                time.sleep(0.001)
+                raw_frame = bytes([])
                 try:
                     raw_frame = READ.read(1024)
                 except:
-                    print("wrong")
-                    pass
-
-            now_frame = raw_frame
-            while(len(raw_frame)==1024):
-                if is_wifi:
-                    try:
-                        raw_frame = READ.recv(1024)
-                    except:
-                        print("超时", len(raw_frame))
-                else:
+                    self.loseConnectEvent.set()
+                    continue
+                now_frame = raw_frame
+                while(len(raw_frame)==1024):
                     try:
                         raw_frame = READ.read(1024)
                     except:
-                        print("wrong")
-                now_frame += raw_frame
-
-            if self.stopreadEvent.is_set():
-                self.stopreadEvent.clear()
-                print("关闭 read_thread")
-                break
-            if last_frame != bytes([]):
-                frame = last_frame + now_frame
-            else:
-                frame = now_frame
-
-            if(len(frame)!=0):
-                data, last_frame = read_msg.form_frame(frame, head)
-            else:
-                continue
-            while(data!=None):
-                if read_msg.check_frame(data):
-                    if(first_recv_flag):
-                        last_count = data[3]
-                        first_recv_flag = 0
+                        self.loseConnectEvent.set()
+                        break
+                    now_frame += raw_frame
+                if self.loseConnectEvent.is_set():
+                    continue
+                if last_frame != bytes([]):
+                    frame = last_frame + now_frame
+                else:
+                    frame = now_frame
+                if(len(frame)!=0):
+                    data, last_frame = read_msg.form_frame(frame, head)
+                else:
+                    continue
+                while(data!=None):
+                    if read_msg.check_frame(data):
+                        if(first_recv_flag):
+                            last_count = data[3]
+                            first_recv_flag = 0
+                        else:
+                            last_count+=1
+                            if(last_count==256):
+                                last_count = 0
+                        now_count = data[3]
+                        if (last_count != now_count):
+                            # print("lose frame ! all lose nums:", all_lose_nums, "now_count:", now_count, "last_count+1:",
+                            #       last_count)
+                            all_lose_nums += 1
+                            print("丢帧！")
+                            last_count = now_count
+                        read_msg.calculate_info(data)
                     else:
-                        last_count+=1
-                        if(last_count==256):
-                            last_count = 0
-                    now_count = data[3]
-                    if (last_count != now_count):
-                        # print("lose frame ! all lose nums:", all_lose_nums, "now_count:", now_count, "last_count+1:",
-                        #       last_count)
-                        all_lose_nums += 1
-                        last_count = now_count
-                    read_msg.calculate_info(data)
-                else:
-                    all_lose_nums+=1
-                    #print("校验失败！")
-                if(last_frame!=None):
-                    data, last_frame = read_msg.form_frame(last_frame, head)
-                else:
-                    data = None
+                        all_lose_nums+=1
+                        print("校验失败！")
+                    if(last_frame!=None):
+                        data, last_frame = read_msg.form_frame(last_frame, head)
+                    else:
+                        data = None
+            else:
+                time.sleep(0.1)
+        self.stopreadEvent.set()
+        print("close read thread!")
 
     # @staticmethod
-    def send_mcu(self,SEND,is_wifi):
+    def send_mcu_serial(self,SEND):
         send_msg = S_MSG()
         get_bytes = send_msg.calculate_info()
-        count = 0
-        time1 =  time.time()
-        while (1):
-            time.sleep(0.01)
-            send_bytes= next(get_bytes)
-            if self.stopsendEvent.is_set():
-                self.stopsendEvent.clear()
-                print("关闭 send_thread")
-                break
-            if send_bytes==None:
-                continue
-            count+=1
-            #print("len:",len(send_bytes),"frequence:",count/(time.time()-time1),send_bytes)
-            if(is_wifi):
-                #SEND.send(bytes(send_bytes))
-                SEND.sendall(bytes(send_bytes))
-            else:
+        # count = 0
+        # time1 =  time.time()
+        while not self.stopEvent.is_set():
+            if not self.loseConnectEvent.is_set():
+                time.sleep(0.01)
+                send_bytes= next(get_bytes)
+                if send_bytes==None:
+                    continue
+                # count+=1
+                # #print("len:",len(send_bytes),"frequence:",count/(time.time()-time1),send_bytes)
                 try:
                     SEND.write(bytes(send_bytes))
                 except:
-                    print("write serial fail!")
-                    print(SEND.close())
+                    self.loseConnectEvent.set()
+            else:
+                time.sleep(0.1)
+        self.stopsendEvent.set()
+        print("close send thread!")
+
+
+
+    def config_wifi(self,config_dict):
+        self.wifi_host = config_dict["host"]
+        self.wifi_port = config_dict["port"]
+
+    def open_wifi(self):
+        if self.com_status == 1:
+            return False
+        wifi = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = self.wifi_host
+        port = int(self.wifi_port)
+        wifi.settimeout(1)
+        try:
+            wifi.connect((host, port))
+            # self.wifi.settimeout(None)
+        except:
+            print("process has die")
+            return False
+        self.com_status = 1
+        read_w = threading.Thread(target=self.read_mcu_wifi, args=(self.wifi,))
+        send_w = threading.Thread(target=self.send_mcu_wifi, args=(self.wifi,))
+        protect_w = threading.Thread(target=self.protect_wifi, args=(wifi,))
+        read_w.start()
+        send_w.start()
+        protect_w.start()
+        return True
+
+    def close_wifi(self):
+        if self.com_status == 0:
+            print("已经是关闭的")
+            return False
+        self.stopreadEvent.clear()
+        self.stopsendEvent.clear()
+        self.stopEvent.set()
+        self.stopreadEvent.wait()
+        self.stopsendEvent.wait()
+        self.wifi.close()
+        self.com_status = 0
+        print("close wifi end")
+        return True
+    # def ping_wifi(self):
+    #     process = subprocess.Popen(self.wifi_host, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    #     command_output = process.stdout.read().decode('GB2312')
+    #     print(command_output)
+    #     return command_output
+
+    # @staticmethod
+    def protect_wifi(self,wifiHandle):
+        while not self.stopEvent.is_set():
+            self.loseConnectEvent.wait()
+            wifiHandle.close()
+            try:
+                wifiHandle.open()
+                self.loseConnectEvent.clear()
+            except:
+                print("wrong--------------------------------!")
+        print("close protect thread!")
+
+    # @staticmethod
+    def read_mcu_wifi(self, READ):
+        read_msg = R_MSG()
+        head = bytes([241, 242])
+        last_frame = bytes([])
+        first_recv_flag = 1
+        last_count = 0
+        all_lose_nums = 0
+        print("开始 read_thread")
+        while not self.stopEvent.is_set():
+            if not self.loseConnectEvent.is_set():
+                time.sleep(0.01)
+                raw_frame = bytes([])
+                try:
+                    raw_frame = READ.recv(1024)
+                except:
+                    self.loseConnectEvent.set()
+                    continue
+                    #print("超时", len(raw_frame))
+                now_frame = raw_frame
+                while (len(raw_frame) == 1024):
                     try:
-                        SEND.open()
+                        raw_frame = READ.recv(1024)
                     except:
-                        print("try open fail!")
+                        self.loseConnectEvent.set()
+                        break
+                        #print("超时", len(raw_frame))
+                    now_frame += raw_frame
+                if self.loseConnectEvent.is_set():
+                    continue
+                if last_frame != bytes([]):
+                    frame = last_frame + now_frame
+                else:
+                    frame = now_frame
+                if (len(frame) != 0):
+                    data, last_frame = read_msg.form_frame(frame, head)
+                else:
+                    continue
+                while (data != None):
+                    if read_msg.check_frame(data):
+                        if (first_recv_flag):
+                            last_count = data[3]
+                            first_recv_flag = 0
+                        else:
+                            last_count += 1
+                            if (last_count == 256):
+                                last_count = 0
+                        now_count = data[3]
+                        if (last_count != now_count):
+                            # print("lose frame ! all lose nums:", all_lose_nums, "now_count:", now_count, "last_count+1:",
+                            #       last_count)
+                            all_lose_nums += 1
+                            print("丢帧！")
+                            last_count = now_count
+                        read_msg.calculate_info(data)
+                    else:
+                        all_lose_nums += 1
+                        print("校验失败！")
+                    if (last_frame != None):
+                        data, last_frame = read_msg.form_frame(last_frame, head)
+                    else:
+                        data = None
+            else:
+                time.sleep(0.1)
+        self.stopreadEvent.set()
+        print("close read thread!")
+
+    # @staticmethod
+    def send_mcu_wifi(self, SEND):
+        send_msg = S_MSG()
+        get_bytes = send_msg.calculate_info()
+        count = 0
+        time1 = time.time()
+        while not self.stopEvent.is_set():
+            if not self.loseConnectEvent.is_set():
+                time.sleep(0.01)
+                send_bytes = next(get_bytes)
+                if send_bytes == None:
+                    continue
+                count += 1
+                # print("len:",len(send_bytes),"frequence:",count/(time.time()-time1),send_bytes)
+                # SEND.send(bytes(send_bytes))
+                try:
+                    SEND.sendall(bytes(send_bytes))
+                except:
+                    self.loseConnectEvent.set()
+            else:
+                time.sleep(0.1)
+        self.stopsendEvent.set()
+        print("close send thread!")
+
+
+
 
 
 if __name__=="__main__":
@@ -581,8 +688,8 @@ if __name__=="__main__":
             now_speed = recvmsg["gro"]["z"]
             #print("nowAngle-aimAngle%5.2f"%(aim_angle-now_angel), end="   ")
             res  = method_angle.process(now_angel,aim_angle,now_speed)
-            sendmsg["ctl_cmd"]["rotation"]  = int(res)
-            print("output:%5.2f"%(res))
+            #sendmsg["ctl_cmd"]["rotation"]  = int(res)
+            #print("output:%5.2f"%(res))
 
             #print("now:",now_angel,"   aim:",aim_angle,"  rotation:",res)
         # if recvmsg["gps"]["lon_degree"]!= None:
